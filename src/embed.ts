@@ -1,9 +1,10 @@
-const d3 = require('d3-selection');
-const vega = require('vega');
-const vl = require('vega-lite');
-const post = require('./post');
-const versionCompare = require('./version');
-const schemaParser = require('vega-schema-url-parser').default;
+import { TopLevelExtendedSpec } from 'vega-lite/build/src/spec';
+import * as d3 from 'd3-selection';
+import * as vega from 'vega';
+import * as vl from 'vega-lite';
+import { post } from './post';
+import { compareVersions } from './version';
+import schemaParser from 'vega-schema-url-parser';
 
 
 const config = {
@@ -24,12 +25,12 @@ const MODES = {
 
 const VERSION = {
   'vega':      vega.version,
-  'vega-lite': vl ? vl.version : -1
+  'vega-lite': vl ? vl.version : 'not available'
 };
 
 const PREPROCESSOR = {
-  'vega':      function(vgjson) { return vgjson; },
-  'vega-lite': function(vljson) { return vl.compile(vljson).spec; }
+  'vega':      function(vgjson: object) { return vgjson; },
+  'vega-lite': function(vljson: TopLevelExtendedSpec) { return vl.compile(vljson).spec; }
 };
 
 function load(url, arg, prop, el) {
@@ -71,7 +72,9 @@ function embed(el, spec, opt) {
   }
 
   // Decide mode
-  let parsed, parsedVersion, mode;
+  let parsed: any;
+  let parsedVersion: string;
+  let mode: 'vega' | 'vega-lite';
   if (spec.$schema) {
     parsed = schemaParser(spec.$schema);
     if (opt.mode && opt.mode !== MODES[parsed.library]) {
@@ -81,7 +84,7 @@ function embed(el, spec, opt) {
     mode = MODES[parsed.library];
 
     parsedVersion = parsed.version.replace(/^v/g,'');
-    if (versionCompare(parsedVersion, VERSION[mode]) !== 0 ){
+    if (compareVersions(parsedVersion, VERSION[mode]) !== 0 ){
       console.warn("The input spec uses \"" + mode + "\" " + parsedVersion + ", "
                  + "but current version of \"" + mode + "\" is " + VERSION[mode] + ".");
     }
@@ -94,7 +97,7 @@ function embed(el, spec, opt) {
     if (spec.$schema) {
       parsed = schemaParser(spec.$schema);
       parsedVersion = parsed.version.replace(/^v/g,'');
-      if (versionCompare(parsedVersion, VERSION['vega']) !== 0 ){
+      if (compareVersions(parsedVersion, VERSION['vega']) !== 0 ){
         console.warn("The compiled spec uses \"vega\" " + parsedVersion + ", "
                    + "but current version of \"vega\" is " + VERSION['vega'] + ".");
       }
@@ -220,5 +223,5 @@ embedMain.vegalite = vl;
 
 // for es5
 module.exports = embedMain;
-// for es 6
+// for es6
 module.exports.default = embedMain;

@@ -1,4 +1,4 @@
-module.exports = function(v1, v2, options) {
+export function compareVersions(v1: string, v2: string, options?) {
     var lexicographical = options && options.lexicographical || true,
         zeroExtend = options && options.zeroExtend || true,
         depth = options && options.depth || 2,
