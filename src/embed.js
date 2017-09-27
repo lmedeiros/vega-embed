@@ -199,11 +199,9 @@ function viewSource(source, sourceHeader, sourceFooter) {
  */
 function embedMain(el, spec, opt) {
   // Ensure any exceptions will be properly handled
-  //var promise = new Promise((accept, reject) => {
-    embed(el, spec, opt);//.then(accept, reject);
-  //});
-
-  //return promise;
+    return new Promise(function (accept, reject) {
+    	embed(el, spec, opt).then(accept).catch(reject)
+  });
 }
 
 // expose Vega and Vega-Lite libs
