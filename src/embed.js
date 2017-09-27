@@ -203,7 +203,7 @@ function embedMain(el, spec, opt) {
     embed(el, spec, opt);//.then(accept, reject);
   //});
 
-  return promise;
+  //return promise;
 }
 
 // expose Vega and Vega-Lite libs
